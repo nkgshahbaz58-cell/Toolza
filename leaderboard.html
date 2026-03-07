@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TurboRush — Leaderboard</title>
+    <meta name="description" content="TurboRush global leaderboard. See the fastest lap times per track." />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;900&display=swap"
+        rel="stylesheet" />
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>" />
+    <style>
+        /* Essential layout for the navbar if not fully in style.css yet */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--border-light);
+            height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        /* Leaderboard Specifics */
+        .lb-page {
+            padding-top: 120px;
+        }
+
+        .lb-hero {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .lb-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+        }
+
+        .lb-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .lb-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+        }
+
+        .track-tabs-row {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .track-tabs {
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid var(--border-light);
+        }
+
+        .tab-btn {
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .lb-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th {
+            text-align: left;
+            padding: 20px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .leaderboard-table td {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rank-text {
+            font-weight: 900;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .rank-1 .rank-text {
+            color: #FFD700;
+        }
+
+        .rank-2 .rank-text {
+            color: #C0C0C0;
+        }
+
+        .rank-3 .rank-text {
+            color: #CD7F32;
+        }
+
+        .lb-actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid rgba(255, 70, 85, 0.3);
+            color: var(--secondary);
+            padding: 14px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 70, 85, 0.1);
+            border-color: var(--secondary);
+        }
+    </style>
+</head>
+
+<body class="lb-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">🏎️ TurboRush</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="game.html" class="btn-primary" style="padding: 10px 24px; font-size: 0.9rem;">Play Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="lb-hero reveal">
+        <h1>🏆 Leaderboard</h1>
+        <p>Top 10 fastest times per track</p>
+    </div>
+
+    <div class="lb-wrap reveal">
+        <div class="track-tabs-row">
+            <div id="track-tabs" class="track-tabs"></div>
+        </div>
+        <div id="lb-container" class="lb-container"></div>
+        <div class="lb-actions">
+            <a href="game.html" class="btn-primary">🏁 Race to Claim #1</a>
+            <button onclick="if(confirm('Clear all scores?')) { clearLeaderboard(); location.reload(); }"
+                class="btn-clear">🗑️ Clear Scores</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 TurboRush SaaS. Built for the speed of light.</p>
+    </footer>
+
+    <script src="js/leaderboard.js"></script>
+    <script src="js/tracks.js"></script>
+    <script>
+        // Initialize tabs from TRACKS array
+        window.addEventListener('DOMContentLoaded', () => {
+            TRACKS.forEach((t, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn' + (idx === 0 ? ' active' : '');
+                btn.textContent = t.thumbnail + ' ' + t.name;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderLeaderboardTable('lb-container', t.id);
+                });
+                document.getElementById('track-tabs').appendChild(btn);
+            });
+            renderLeaderboardTable('lb-container', 0);
+        });
+    </script>
+</body>
+
+</html>
