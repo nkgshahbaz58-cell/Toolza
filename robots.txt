@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /css/
+Disallow: /js/
+
+Sitemap: https://toolza.site/sitemap.xml
+
+# TurboRush — The Ultimate Browser Racing Game
+# https://toolza.site

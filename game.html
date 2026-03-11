@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>TurboRush — Play Now | Free 3D Browser Racing Game</title>
+  <meta name="description" content="Play TurboRush — the ultimate 3D browser racing game with stunning neon city graphics, dynamic weather, AI opponents, nitro boosts, and 4 unique tracks. No download required.">
+  <meta name="keywords" content="play racing game, 3D car game, browser racing, TurboRush play, free car game online, nitro racing game">
+  <meta name="author" content="TurboRush">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://toolza.site/game.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://toolza.site/game.html">
+  <meta property="og:title" content="TurboRush — Play Now | 3D Browser Racing">
+  <meta property="og:description" content="Race through neon cities with stunning 3D graphics, AI opponents, and nitro boosts. Free to play in your browser!">
+  <meta property="og:site_name" content="TurboRush">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TurboRush — Play Now | 3D Browser Racing">
+  <meta name="twitter:description" content="Race through neon cities with AI opponents and nitro boosts. Free browser game!">
+
+  <!-- Geo Tags -->
+  <meta name="geo.region" content="US">
+  <meta name="geo.placename" content="Worldwide">
+  <meta name="ICBM" content="37.7749, -122.4194">
+  <meta name="geo.position" content="37.7749;-122.4194">
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#0a0a0f">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "TurboRush",
+    "url": "https://toolza.site/game.html",
+    "description": "Free 3D browser-based racing game with neon city tracks, AI opponents, nitro boost, and global leaderboards.",
+    "genre": "Racing",
+    "gamePlatform": "Web Browser",
+    "playMode": "SinglePlayer",
+    "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0f; font-family: 'Inter', sans-serif; color: #fff; }
+    canvas#gameCanvas { display: block; width: 100%; height: 100%; position: fixed; top: 0; left: 0; z-index: 1; }
+
+    /* === GARAGE SCREEN === */
+    #garageScreen { position: fixed; inset: 0; z-index: 100; background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .garage-title { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; background: linear-gradient(135deg, #00d4ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+    .garage-sub { color: rgba(255,255,255,0.5); margin-bottom: 32px; font-size: 1rem; }
+    .garage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 720px; width: 90%; margin-bottom: 32px; }
+    @media(max-width:600px) { .garage-grid { grid-template-columns: repeat(2, 1fr); } }
+    .car-card { background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; transition: 0.3s ease; }
+    .car-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,212,255,0.15); }
+    .car-card.selected { border-color: #00d4ff; background: rgba(0,212,255,0.08); box-shadow: 0 0 30px rgba(0,212,255,0.2); }
+    .car-card .car-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .car-card .car-name { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .car-card .car-stats { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 6px; }
+
+    /* Track Selector */
+    .track-row { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; justify-content: center; }
+    .track-chip { padding: 10px 20px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s; }
+    .track-chip:hover { border-color: rgba(0,212,255,0.4); }
+    .track-chip.active { background: #00d4ff; color: #000; border-color: #00d4ff; }
+
+    .btn-race { padding: 18px 48px; background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.1rem; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; letter-spacing: 0.5px; }
+    .btn-race:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,212,255,0.4); }
+    .btn-back { position: absolute; top: 24px; left: 24px; color: rgba(255,255,255,0.5); text-decoration: none; font-weight: 600; font-size: 0.9rem; z-index: 101; }
+
+    /* === HUD === */
+    #hud { position: fixed; z-index: 10; inset: 0; pointer-events: none; display: none; }
+    .hud-top { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 24px; align-items: center; }
+    .hud-pill { background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 8px 20px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.85rem; white-space: nowrap; }
+    .hud-bottom-left { position: absolute; bottom: 24px; left: 24px; }
+    .hud-bottom-right { position: absolute; bottom: 24px; right: 24px; }
+    .speed-display { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 3.5rem; line-height: 1; text-shadow: 0 0 30px rgba(0,212,255,0.5); }
+    .speed-unit { font-size: 1rem; color: rgba(255,255,255,0.4); font-weight: 600; }
+    .nitro-bar-wrap { width: 200px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+    .nitro-bar-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #a855f7); border-radius: 4px; transition: width 0.1s; width: 100%; }
+    .gear-display { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 2rem; color: rgba(255,255,255,0.3); text-align: right; }
+    .gear-display .gear-num { font-size: 3rem; color: #00d4ff; }
+
+    /* Minimap */
+    #minimap { position: absolute; top: 16px; right: 16px; width: 140px; height: 140px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+
+    /* Countdown */
+    #countdown { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 8rem; color: #00d4ff; text-shadow: 0 0 60px rgba(0,212,255,0.6); }
+
+    /* Results */
+    #resultsScreen { position: fixed; inset: 0; z-index: 100; background: rgba(5,5,15,0.95); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; flex-direction: column; }
+    .results-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 48px; text-align: center; max-width: 500px; width: 90%; }
+    .results-card h2 { font-family: 'Outfit', sans-serif; font-size: 2.5rem; margin-bottom: 8px; }
+    .results-time { font-family: 'Outfit', sans-serif; font-size: 3rem; font-weight: 900; color: #00d4ff; margin: 16px 0; }
+    .results-pos { font-size: 1.2rem; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
+    .result-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .result-btns button, .result-btns a { padding: 14px 28px; border-radius: 40px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; text-decoration: none; border: none; transition: 0.3s; }
+    .btn-restart { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; }
+    .btn-garage-back { background: transparent; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; }
+    .btn-lb { background: transparent; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; }
+
+    /* Name input */
+    .name-input { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 12px 16px; color: #fff; font-size: 1rem; font-family: 'Inter', sans-serif; width: 100%; max-width: 280px; margin-bottom: 16px; text-align: center; outline: none; }
+    .name-input:focus { border-color: #00d4ff; }
+
+    /* Touch Controls */
+    #touchControls { position: fixed; bottom: 0; left: 0; right: 0; z-index: 20; display: none; padding: 16px; pointer-events: none; }
+    .touch-row { display: flex; justify-content: space-between; align-items: flex-end; }
+    .touch-btn { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; pointer-events: all; user-select: none; -webkit-user-select: none; touch-action: none; }
+    .touch-btn:active { background: rgba(0,212,255,0.3); border-color: #00d4ff; }
+    .touch-steer { display: flex; gap: 12px; }
+    .touch-actions { display: flex; gap: 12px; flex-direction: column; }
+    .touch-nitro { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.4); }
+
+    /* Loading */
+    #loadingOverlay { position: fixed; inset: 0; z-index: 200; background: #0a0a0f; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s; }
+    .loader-spinner { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #00d4ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div id="loadingOverlay"><div class="loader-spinner"></div><span style="color:rgba(255,255,255,0.5)">Loading TurboRush…</span></div>
+
+  <!-- Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Garage -->
+  <div id="garageScreen">
+    <a href="index.html" class="btn-back">← Back to Home</a>
+    <div class="garage-title">🏎️ Choose Your Ride</div>
+    <div class="garage-sub">Select a car and track to begin</div>
+    <div class="garage-grid" id="carGrid"></div>
+    <div class="track-row" id="trackRow"></div>
+    <button class="btn-race" id="btnStartRace">🏁 Start Race</button>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="hud-pill" id="hudLap">LAP 1/3</div>
+      <div class="hud-pill" id="hudTimer">0:00.00</div>
+      <div class="hud-pill" id="hudPos">POS 1/4</div>
+    </div>
+    <canvas id="minimap" width="140" height="140"></canvas>
+    <div class="hud-bottom-left">
+      <div class="speed-display"><span id="speedVal">0</span></div>
+      <div class="speed-unit">KM/H</div>
+      <div class="nitro-bar-wrap"><div class="nitro-bar-fill" id="nitroBar"></div></div>
+    </div>
+    <div class="hud-bottom-right">
+      <div class="gear-display">GEAR<br><span class="gear-num" id="gearVal">1</span></div>
+    </div>
+  </div>
+
+  <!-- Countdown -->
+  <div id="countdown"></div>
+
+  <!-- Results -->
+  <div id="resultsScreen">
+    <div class="results-card">
+      <h2>🏆 Race Complete!</h2>
+      <div class="results-time" id="resultTime">0:00.00</div>
+      <div class="results-pos" id="resultPos">1st Place</div>
+      <input class="name-input" id="playerNameInput" placeholder="Enter your name" maxlength="20" value="Racer">
+      <div class="result-btns">
+        <button class="btn-restart" id="btnRestart">🔄 Race Again</button>
+        <button class="btn-garage-back" id="btnBackGarage">🏠 Garage</button>
+        <a class="btn-lb" href="leaderboard.html">🏆 Leaderboard</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Touch Controls -->
+  <div id="touchControls">
+    <div class="touch-row">
+      <div class="touch-steer">
+        <div class="touch-btn" id="touchLeft">◀</div>
+        <div class="touch-btn" id="touchRight">▶</div>
+      </div>
+      <div class="touch-actions">
+        <div class="touch-btn touch-nitro" id="touchNitro">🔥</div>
+        <div class="touch-btn" id="touchBrake">⬇</div>
+        <div class="touch-btn" id="touchGas">⬆</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/tracks.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/game-engine.js"></script>
+  <script src="js/game-play.js"></script>
+</body>
+</html>
